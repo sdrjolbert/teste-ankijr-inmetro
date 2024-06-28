@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Home() {
   const [apkgFile, setApkgFile] = useState();
+  const [front, setFront] = useState("Nada ainda!");
+  const [back, setBack] = useState("Nada ainda!");
+  const [isLoading, setLoading] = useState();
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -17,6 +20,8 @@ export default function Home() {
     const formData = new FormData();
     formData.append("apkg-file", apkgFile);
 
+    setLoading(true);
+
     try {
       const response = await axios.post(
         "http://localhost:4444/api/teste-apkg",
@@ -27,6 +32,25 @@ export default function Home() {
           },
         }
       );
+
+      // const deckData = response.data.deck;
+      // const blob = new Blob([JSON.stringify(deckData)], {
+      //   type: "application/json",
+      // });
+      // const url = URL.createObjectURL(blob);
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.download = "deck.json";
+      // document.body.appendChild(link);
+      // link.click();
+      // document.body.removeChild(link);
+      // URL.revokeObjectURL(url);
+
+      setTimeout(() => {
+        setFront(response.data.deck.notes[0].sfld);
+        setBack(response.data.deck.notes[0].flds.split("\u001f")[1]);
+        setLoading(false);
+      }, 3000);
 
       console.log(response);
     } catch (err) {
@@ -57,6 +81,12 @@ export default function Home() {
           >
             Enviar
           </button>
+        </section>
+
+        <section className="mt-4 flex flex-col items-center justify-center gap-4">
+          <p>Front: {isLoading ? "Carregando..." : front}</p>
+
+          <p>Back: {isLoading ? "Carregando..." : back}</p>
         </section>
       </main>
 
