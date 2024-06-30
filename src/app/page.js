@@ -33,18 +33,18 @@ export default function Home() {
         }
       );
 
-      // const deckData = response.data.deck;
-      // const blob = new Blob([JSON.stringify(deckData)], {
-      //   type: "application/json",
-      // });
-      // const url = URL.createObjectURL(blob);
-      // const link = document.createElement("a");
-      // link.href = url;
-      // link.download = "deck.json";
-      // document.body.appendChild(link);
-      // link.click();
-      // document.body.removeChild(link);
-      // URL.revokeObjectURL(url);
+      const deckData = response.data.deck;
+      const blob = new Blob([JSON.stringify(deckData)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${response.data.filename}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
       setTimeout(() => {
         setFront(response.data.deck.notes[0].sfld);
