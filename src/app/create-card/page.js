@@ -5,9 +5,11 @@ import axios from "axios";
 
 export default function Home() {
   const [token, setToken] = useState("");
-  const [filename, setFilename] = useState("");
+  const [deckName, setDeckName] = useState("");
+  const [frontCard, setFrontCard] = useState("");
+  const [backCard, setBackCard] = useState("");
   const [message, setMessage] = useState(
-    "Nada ainda, digite o seu Token e o nome do arquivo para baixar!"
+    "Nada ainda, digite o seu token e o nome do deck para criar!"
   );
   const [isLoading, setLoading] = useState();
 
@@ -15,8 +17,16 @@ export default function Home() {
     setToken(e.target.value);
   };
 
-  const handleFilenameChange = async (e) => {
-    setFilename(e.target.value);
+  const handleDeckName = async (e) => {
+    setDeckName(e.target.value);
+  };
+
+  const handleFrontCardChange = async (e) => {
+    setFrontCard(e.target.value);
+  };
+
+  const handleBackCardChange = async (e) => {
+    setBackCard(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -27,7 +37,7 @@ export default function Home() {
     try {
       const response = await axios.post(
         "http://localhost:4444/api/deck/get-deck",
-        filename,
+        deckName,
         {
           headers: {
             "Content-Type": "text/plain",
@@ -40,29 +50,20 @@ export default function Home() {
 
       try {
         const response = await axios.post(
-          "http://localhost:4444/api/apkg/export",
-          { jsonData, filename },
+          "http://localhost:4444/api/apkg/create-deck",
+          { deckName, frontCard, backCard, jsonData },
           {
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
-            responseType: "blob",
           }
         );
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", `${response.headers["x-filename"]}.apkg`);
-        document.body.appendChild(link);
-        link.click();
-
-        link.parentNode.removeChild(link);
-
-        setMessage(response.statusText);
+        setMessage(response.data.success);
         setLoading(false);
 
-        console.log(response.statusText);
+        console.log(response.data.success);
       } catch (err) {
         setMessage(err.response.data.error);
         setLoading(false);
@@ -99,14 +100,40 @@ export default function Home() {
 
         <div className="relative !mb-4">
           <input
-            onChange={handleFilenameChange}
-            value={filename}
+            onChange={handleDeckName}
+            value={deckName}
             type="text"
-            placeholder="Nome do arquivo .apkg"
+            placeholder="Nome do deck"
             className="input__class block w-full bg-clip-padding text-inmetro font-normal text-base leading-tight min-h-[calc(3.5rem_+_2px)] h-[calc(3.5rem_+_2px)] border px-3 py-4 rounded-md border-solid transition[colors, shadow] duration-150 ease-in-out"
           />
           <label className="label__input label__class transition[opacity, transform] duration-300 ease-in-out">
-            Nome do arquivo .apkg
+            Nome do deck
+          </label>
+        </div>
+
+        <div className="relative !mb-4">
+          <input
+            onChange={handleFrontCardChange}
+            value={frontCard}
+            type="text"
+            placeholder="Front do card"
+            className="input__class block w-full bg-clip-padding text-inmetro font-normal text-base leading-tight min-h-[calc(3.5rem_+_2px)] h-[calc(3.5rem_+_2px)] border px-3 py-4 rounded-md border-solid transition[colors, shadow] duration-150 ease-in-out"
+          />
+          <label className="label__input label__class transition[opacity, transform] duration-300 ease-in-out">
+            Frente do card
+          </label>
+        </div>
+
+        <div className="relative !mb-4">
+          <input
+            onChange={handleBackCardChange}
+            value={backCard}
+            type="text"
+            placeholder="Back do card"
+            className="input__class block w-full bg-clip-padding text-inmetro font-normal text-base leading-tight min-h-[calc(3.5rem_+_2px)] h-[calc(3.5rem_+_2px)] border px-3 py-4 rounded-md border-solid transition[colors, shadow] duration-150 ease-in-out"
+          />
+          <label className="label__input label__class transition[opacity, transform] duration-300 ease-in-out">
+            Back do card
           </label>
         </div>
 
@@ -115,11 +142,11 @@ export default function Home() {
             onClick={handleSubmit}
             className="flex flex-row flex-nowrap gap-1.5 items-center text-xl font-normal leading-normal text-center no-underline align-middle cursor-pointer select-none border bg-secondary text-white px-4 py-2 rounded-lg border-solid border-secondary hover:border-inmetro hover:bg-inmetro transition-[colors, shadow] duration-[400ms] ease-in-out"
           >
-            Baixar .apkg
+            Criar Card
           </button>
         </section>
 
-        <section className="mt-4 flex flex-col items-center justify-center gap-4">
+        <section className="mt-4 flex flex-col items-center justify-center gap-4 max-w-[800px] w-full">
           <p>Mensagem: {isLoading ? "Carregando..." : message}</p>
         </section>
       </main>

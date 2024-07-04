@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Home() {
-  const [bearer, setBearer] = useState("");
+  const [token, setToken] = useState("");
   const [apkgFile, setApkgFile] = useState();
   const [message, setMessage] = useState(
-    "Nada ainda, envie um arquivo .apkg para importar!"
+    "Nada ainda, digite o seu Token e selecione um arquivo .apkg para importar!"
   );
   const [isLoading, setLoading] = useState();
 
-  const handleBearerChange = async (e) => {
-    setBearer(e.target.value);
+  const handleTokenChange = async (e) => {
+    setToken(e.target.value);
   };
 
   const handleFileChange = async (e) => {
@@ -35,7 +35,7 @@ export default function Home() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${bearer}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -64,14 +64,14 @@ export default function Home() {
       <main className="flex flex-col items-center justify-center w-full min-h-[75vh]">
         <div className="relative !mb-4">
           <input
-            onChange={handleBearerChange}
-            value={bearer}
+            onChange={handleTokenChange}
+            value={token}
             type="text"
-            placeholder="Bearer"
+            placeholder="Token"
             className="input__class block w-full bg-clip-padding text-inmetro font-normal text-base leading-tight min-h-[calc(3.5rem_+_2px)] h-[calc(3.5rem_+_2px)] border px-3 py-4 rounded-md border-solid transition[colors, shadow] duration-150 ease-in-out"
           />
           <label className="label__input label__class transition[opacity, transform] duration-300 ease-in-out">
-            Bearer
+            Token
           </label>
         </div>
 
