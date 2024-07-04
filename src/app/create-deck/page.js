@@ -7,7 +7,7 @@ export default function Home() {
   const [bearer, setBearer] = useState("");
   const [filename, setFilename] = useState("");
   const [message, setMessage] = useState(
-    "Nada ainda, digite o seu token bearer e o nome do arquivo para baixar!"
+    "Nada ainda, digite o seu token bearer e o nome do deck para criar!"
   );
   const [isLoading, setLoading] = useState();
 
@@ -26,7 +26,7 @@ export default function Home() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4444/api/deck/get-deck",
+        "http://localhost:4444/api/deck/create-deck",
         filename,
         {
           headers: {
@@ -36,39 +36,10 @@ export default function Home() {
         }
       );
 
-      const { jsonData } = response.data;
+      setLoading(false);
+      setMessage(response.data.success);
 
-      try {
-        const response = await axios.post(
-          "http://localhost:4444/api/apkg/export",
-          jsonData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            responseType: "blob",
-          }
-        );
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", `${response.headers["x-filename"]}.apkg`);
-        document.body.appendChild(link);
-        link.click();
-
-        link.parentNode.removeChild(link);
-
-        setMessage(response.statusText);
-        setLoading(false);
-
-        console.log(response.statusText);
-      } catch (err) {
-        setMessage(err.response.data.error);
-        setLoading(false);
-
-        console.log(err.response.data.error);
-      }
+      console.log(response.data.success);
     } catch (err) {
       setMessage(err.response.data.error);
       setLoading(false);
@@ -115,11 +86,11 @@ export default function Home() {
             onClick={handleSubmit}
             className="flex flex-row flex-nowrap gap-1.5 items-center text-xl font-normal leading-normal text-center no-underline align-middle cursor-pointer select-none border bg-secondary text-white px-4 py-2 rounded-lg border-solid border-secondary hover:border-inmetro hover:bg-inmetro transition-[colors, shadow] duration-[400ms] ease-in-out"
           >
-            Baixar .apkg
+            Criar Deck
           </button>
         </section>
 
-        <section className="mt-4 flex flex-col items-center justify-center gap-4">
+        <section className="mt-4 flex flex-col items-center justify-center gap-4 max-w-[800px] w-full">
           <p>Mensagem: {isLoading ? "Carregando..." : message}</p>
         </section>
       </main>
