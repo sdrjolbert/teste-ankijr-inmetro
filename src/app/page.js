@@ -30,7 +30,7 @@ export default function Home() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4444/api/apkg/import",
+        "https://api-anki-inmetro.vercel.app/api/apkg/import",
         formData,
         {
           headers: {

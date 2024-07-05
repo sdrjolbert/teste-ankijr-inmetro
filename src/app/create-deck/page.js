@@ -26,7 +26,7 @@ export default function Home() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4444/api/deck/create-deck",
+        "https://api-anki-inmetro.vercel.app/api/deck/create-deck",
         filename,
         {
           headers: {

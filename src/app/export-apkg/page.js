@@ -26,49 +26,30 @@ export default function Home() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4444/api/deck/get-deck",
+        "https://api-anki-inmetro.vercel.app/api/apkg/export",
         filename,
         {
           headers: {
             "Content-Type": "text/plain",
             Authorization: `Bearer ${token}`,
           },
+          responseType: "blob",
         }
       );
 
-      const { jsonData } = response.data;
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${response.headers["x-filename"]}.apkg`);
+      document.body.appendChild(link);
+      link.click();
 
-      try {
-        const response = await axios.post(
-          "http://localhost:4444/api/apkg/export",
-          { jsonData, filename },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            responseType: "blob",
-          }
-        );
+      link.parentNode.removeChild(link);
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", `${response.headers["x-filename"]}.apkg`);
-        document.body.appendChild(link);
-        link.click();
+      setMessage(response.statusText);
+      setLoading(false);
 
-        link.parentNode.removeChild(link);
-
-        setMessage(response.statusText);
-        setLoading(false);
-
-        console.log(response.statusText);
-      } catch (err) {
-        setMessage(err.response.data.error);
-        setLoading(false);
-
-        console.log(err.response.data.error);
-      }
+      console.log(response.statusText);
     } catch (err) {
       setMessage(err.response.data.error);
       setLoading(false);
